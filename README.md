@@ -380,3 +380,13 @@ No index.ts:
 import cors from 'cors';
 app.use(cors());
 ```
+### 17. Versionamento com Git/Github
+git clone https://github.com/tecnicoroot/task-api.git
+git add ./
+git commit -m "primeiro comite."
+git remoto -v
+git remote -v
+git remote remove origin
+git remote add origin git@github.com:tecnicoroot/task-api.git
+git remote -v
+git push origin main
