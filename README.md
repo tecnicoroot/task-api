@@ -12,8 +12,8 @@ yarn init -y
 
 ### 3. Instale as dependências
 ```bash
-yarn add express sequelize pg pg-hstore dotenv sequelize-typescript 
-yarn add -D typescript @types/express @types/node nodemon ts-node sequelize-cli @types/sequelize
+yarn add express sequelize pg pg-hstore dotenv sequelize-typescript bcrypt md5
+yarn add -D typescript @types/express @types/node nodemon ts-node sequelize-cli @types/sequelize @types/bcrypt @types/md5
 ```
 
 ### 4. Crie o arquivo de configuração do TypeScript
@@ -47,20 +47,42 @@ project/
 │   │   └── user.ts
 │   ├── routes/
 │   │   └── user.ts
-│   └── changelog.md
 └── .env
 ```
 
 ### 6. Crie o arquivo **.env**
 Exemplo:
 ```
+# banco de dados
 DB_HOST=localhost
 DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 DB_NAME=seubanco
 DB_PORT=5432
+
+# token JWT
+SECRET=
+EXPIRESIN=
+
+# E-mail
+EMAIL_HOST=
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_PORT=
+
+# REDIS
+REDIS_HOST=
+REDIS_PORT=
+REDIS_USER=
+REDIS_PASSWORD=
+
+# API
+API_URL=
+API_PORT=
+API_PORT_PRONT=
+
 ```
-#### 6.1 Coonfiguração do Sequelize.
+#### 6.1 Configuração do Sequelize.
 '''
     yarn sequelize init'''
 '''
@@ -74,27 +96,316 @@ project/
 ├── seeders/
 └── ...
 '''
-Por questão de organizaão vou copiar as pastas criadas para a pasta src/.
+Por questão de organizaão vou copiar as pastas criadas para a pasta src/database/.
 '''
-mv config/ src/
-mv migrations/ src/
-mv models/ src/
-mv seeders/ src/
+mv config/ src/database/
+mv migrations/ src/database/
+mv models/ src/database/
+mv seeders/ src/database/
+'''
+
+Após esta alteração ficará assim:
+'''
+project/
+├── src/
+│   ├── database/
+│   │   ├── migrations/
+│   │   └── seeders/
+└── ...
 '''
 
 Será necessário criar o arquivo .sequelizerc com o segunte conteúdo:
 '''
-const path = requeire('path');
 
-modules.exports = {
-    'config': path.resolve('src', 'config', 'database.ts'),
-    'models-path': path.resolve('src', 'models'),
-    'migrations-path': path.resolve('src', 'migrations'),
-    'seeders-path': path.resolve('src', 'seeders'),
+const { resolve } = require("path");
+
+module.exports = {
+  "config": resolve(__dirname, "src", "config", "database.js"),
+  "models-path": resolve(__dirname, "src", "app", "models"),
+  "migrations-path": resolve(__dirname, "src", @types/bcrypt @types/md5"database", "migrations"),
+  "seeders-path": resolve(__dirname, "src", "database", "seeds")
 }
+
 '''
 
+#### 6.2 Criação das Migrations
 
+``` 20251121192254-create-users.js ```
+```javascript
+"use strict";
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("usuarios", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+
+      // FK empresa
+      id_empresa: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "empresas",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+
+      // FK usuário criador
+      criado_pelo_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "usuarios",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+
+      telefone: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+
+      tipo_acesso: {
+        type: Sequelize.ENUM("superadmin", "admin", "colaborador"),
+        allowNull: true,
+      },
+
+      data_nascimento: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+      },
+
+      status: {
+        type: Sequelize.ENUM(
+          "ACTIVATED",
+          "BANNED",
+          "DEACTIVATED",
+          "DELETED"
+        ),
+        allowNull: false,
+        defaultValue: "DEACTIVATED",
+      },
+
+      email: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+
+      password: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+
+      hash_ativacao: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+
+      primeiro_acesso: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+
+      criado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+
+      atualizado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+  },
+
+  async down(queryInterface) {
+    await queryInterface.dropTable("usuarios");
+
+    // remover ENUMs (Postgres)
+    await queryInterface.sequelize.query(
+      'DROP TYPE IF EXISTS "enum_usuarios_status";'
+    );
+
+    await queryInterface.sequelize.query(
+      'DROP TYPE IF EXISTS "enum_usuarios_tipo_acesso";'
+    );
+  },
+};
+
+```
+
+
+``` 20251212193044-create-roles.js ```
+```javascript
+"use strict";
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("roles", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+
+      criado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+
+      atualizado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+  },
+
+  async down(queryInterface) {
+    await queryInterface.dropTable("roles");
+  },
+};
+
+```
+``` 20251212193058-create-permissions.js ```
+```javascript
+"use strict";
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("permissions", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+
+      criado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+
+      atualizado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+  },
+
+  async down(queryInterface) {
+    await queryInterface.dropTable("permissions");
+  },
+};
+
+```
+``` 20251212193121-create-user-roles.js ```
+```javascript
+"use strict";
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("user_roles", {
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "usuarios",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+
+      role_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "roles",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+
+      criado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+
+      atualizado_em: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+
+    // Primary key composta
+    await queryInterface.addConstraint("user_roles", {
+      fields: ["user_id", "role_id"],
+      type: "primary key",
+      name: "pk_user_roles",
+    });
+  },
+
+  async down(queryInterface) {
+    await queryInterface.dropTable("user_roles");
+  },
+};
+
+```
+
+``` 20251212193141-create-role-permissions.js ```
+```javascript
+RolePermission.init(
+  {
+    role_id: DataTypes.INTEGER,
+    permission_id: DataTypes.INTEGER,
+  },
+  {
+    sequelize,
+    tableName: "role_permissions",
+    timestamps: true,
+    createdAt: "criado_em",
+    updatedAt: "atualizado_em",
+  }
+);
+
+```
 ### 7. Código dos arquivos principais
 **src/config/database.ts**
 
@@ -119,40 +430,324 @@ const sequelize = new Sequelize(
 export default sequelize;
 ```
 
+```src/models/Role.ts```
+```javascript
+import { Model, DataTypes } from "sequelize";
+import type { Optional } from "sequelize";
+import sequelize from "../config/database.ts";
+
+interface RoleAttributes {
+  id: number;
+  name: string;
+}
+
+interface RoleCreationAttributes
+  extends Optional<RoleAttributes, "id"> {}
+
+class Role
+  extends Model<RoleAttributes, RoleCreationAttributes>
+  implements RoleAttributes
+{
+  public id!: number;
+  public name!: string;
+
+  static associate(models: any) {
+    this.belongsToMany(models.User, {
+      through: "user_roles",
+      foreignKey: "role_id",
+      otherKey: "user_id",
+      as: "usuarios",
+      timestamps: false,
+    });
+
+    this.belongsToMany(models.Permission, {
+      through: "role_permissions",
+      foreignKey: "role_id",
+      otherKey: "permission_id",
+      as: "permissions",
+      timestamps: false,
+    });
+  }
+}
+
+Role.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "roles",
+    modelName: "Role",
+    timestamps: false,
+  }
+);
+
+export default Role;
+```
+```src/models/Permission.ts```
+```javascript
+import { Model, DataTypes } from "sequelize";
+import type { Optional } from "sequelize";
+import sequelize from "../config/database.ts";
+
+interface PermissionAttributes {
+  id: number;
+  name: string;
+}
+
+interface PermissionCreationAttributes
+  extends Optional<PermissionAttributes, "id"> {}
+
+class Permission
+  extends Model<PermissionAttributes, PermissionCreationAttributes>
+  implements PermissionAttributes
+{
+  public id!: number;
+  public name!: string;
+
+  static associate(models: any) {
+    this.belongsToMany(models.Role, {
+      through: "role_permissions",
+      foreignKey: "permission_id",
+      otherKey: "role_id",
+      as: "roles",
+      timestamps: false,
+    });
+  }
+}
+
+Permission.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "permissions",
+    modelName: "Permission",
+    timestamps: false,
+  }
+);
+
+export default Permission;
+```
+
 ```src/models/User.ts```
 ```javascript
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model } from "sequelize";
+import type { Optional } from "sequelize";
+import bcrypt from "bcrypt";
+import md5 from "md5";
+import sequelize from "../config/database.ts";
 
 interface UserAttributes {
   id: number;
   name: string;
   email: string;
+
+  password_hash: string;
+  activation_hash?: string;
+
+  password?: string;
+
+  phone_number?: string;
+  date_of_birth?: Date;
+  status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
+  first_access?: boolean;
+  company_id?: number;
+  criado_pelo_usuario?: number;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+interface UserCreationAttributes
+  extends Optional<
+    UserAttributes,
+    | "id"
+    | "password_hash"
+    | "activation_hash"
+    | "phone_number"
+    | "date_of_birth"
+    | "status"
+    | "first_access"
+    | "company_id"
+    | "criado_pelo_usuario"
+  > {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   public id!: number;
   public name!: string;
   public email!: string;
+
+  public password_hash!: string;
+  public activation_hash?: string;
+
+  public password?: string;
+
+  public phone_number?: string;
+  public date_of_birth?: Date;
+  public status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
+  public first_access?: boolean;
+  public company_id?: number;
+  public criado_pelo_usuario?: number;
+
+  // verificar senha
+  public checkPassword(password: string) {
+    return bcrypt.compare(password, this.password_hash);
+  }
+
+  // gerar senha temporária
+  static generateTemporaryPassword(length = 8) {
+    const chars =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    let password = "";
+
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    return password;
+  }
+
+  recovery_password() {
+    return md5(this.email);
+  }
+
+  static associate(models: any) {
+    this.belongsTo(models.Company, {
+      foreignKey: "id_empresa",
+      as: "company",
+    });
+
+    this.belongsTo(models.User, {
+      foreignKey: "criado_pelo_usuario",
+      as: "creator",
+    });
+
+    this.hasMany(models.User, {
+      foreignKey: "criado_pelo_usuario",
+      as: "createdUsers",
+    });
+
+    this.belongsToMany(models.Role, {
+      through: "user_roles",
+      foreignKey: "user_id",
+      otherKey: "role_id",
+      as: "roles",
+      timestamps: false,
+    });
+  }
 }
 
 User.init(
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
+    name: {
+      type: DataTypes.STRING,
+      field: "nome",
+    },
+
+    email: DataTypes.STRING,
+
+    password: {
+      type: DataTypes.VIRTUAL,
+    },
+
+    password_hash: {
+      type: DataTypes.STRING,
+      field: "password",
+    },
+
+    activation_hash: {
+      type: DataTypes.STRING,
+      field: "hash_ativacao",
+    },
+
+    phone_number: {
+      type: DataTypes.STRING,
+      field: "telefone",
+    },
+
+    date_of_birth: {
+      type: DataTypes.DATEONLY,
+      field: "data_nascimento",
+    },
+
+    status: {
+      type: DataTypes.ENUM(
+        "ACTIVATED",
+        "BANNED",
+        "DEACTIVATED",
+        "DELETED"
+      ),
+    },
+
+    first_access: {
+      type: DataTypes.BOOLEAN,
+      field: "primeiro_acesso",
+    },
+
+    company_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "id_empresa",
+    },
+
+    criado_pelo_usuario: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    tableName: 'users',
-    timestamps: false,
+    tableName: "usuarios",
+    modelName: "User",
+    underscored: true,
+    createdAt: "criado_em",
+    updatedAt: "atualizado_em",
   }
 );
 
+
+// Hooks
+User.beforeSave(async (user: User) => {
+  if (user.password) {
+    user.password_hash = await bcrypt.hash(user.password, 8);
+  }
+
+  if (!user.activation_hash) {
+    user.activation_hash = md5(user.email);
+  }
+});
+
 export default User;
 ```
+
 
 **src/routes/user.ts**
 ```javascript
