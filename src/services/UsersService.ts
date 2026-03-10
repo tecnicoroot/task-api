@@ -1,4 +1,4 @@
-import UsersRepository from "../repositories/UsersRepository.ts";
+import UsersRepository from "../repositories/UsersRepository";
 
 class UsersService {
 

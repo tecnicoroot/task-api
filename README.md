@@ -19,18 +19,18 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
   - [x]  [6.1 Configuração do Sequelize](#61-configuracao-do-sequelize)
   - [x]  [6.2 Criação das Migrations](#62-criacao-das-migrations)
   - [x]  [6.3 Criação do Seeder](#63-criacao-do-seeder)
-- [ ]  [7. Código dos arquivos principais](#7-codigo-dos-arquivos-principais)
+- [x]  [7. Código dos arquivos principais](#7-codigo-dos-arquivos-principais)
   - [x] [7.1 src/config/database.ts](#71-srcconfigdatabasets)
   - [x] [7.2 src/models/Role.ts](#72-srcmodelsrolets)
   - [x] [7.3 src/models/Permission.ts](#73-srcmodelspermissionts)
   - [x] [7.4 src/models/User.ts](#74-srcmodelsuserts)
-  - [ ] [7.5 src/repositories]()
-  - [ ] [7.6 src/services]()
-  - [ ] [7.7 src/controllers]()
-  - [ ] [7.8 src/routes/user.ts](#75-srcroutesuserts)
-  - [ ] [7.9 src/index.ts](#76-srcindexts)
+  - [x] [7.5 src/services/UsersService]()
+  - [x] [7.6 src/repositories/UsersRepository]()
+  - [x] [7.7 src/controllers/UsersController]()
+  - [x] [7.8 src/routes/user.ts]()
+  - [x] [7.9 src/index.ts]()
 - [x]  [8. Adicione o script de dev no package.json](#8-adicione-o-script-de-dev-no-packagejson)
-- [ ]  [9. Rode o projeto](#9-rode-o-projeto)
+- [x]  [9. Rode o projeto](#9-rode-o-projeto)
 - [ ]  [10. Validação de Dados](#10-validacao-de-dados)
 - [ ]  [11. Atualizar e Deletar Usuário](#11-atualizar-e-deletar-usuario)
 - [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
@@ -819,9 +819,196 @@ User.beforeSave(async (user: User) => {
 
 export default User;
 ```
+[⬆ Voltar ao topo](#top)
+### 7.5 **src/services**
+```javascript
+import UsersRepository from "../repositories/UsersRepository";
 
+class UsersService {
 
-### 7.5 **src/routes/user.ts**
+  async listUsers() {
+    return UsersRepository.findAll();
+  }
+
+  async getUser(id: number) {
+
+    const user = await UsersRepository.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    return user;
+  }
+
+  async createUser(data: any) {
+
+    const emailExists = await UsersRepository.findByEmail(data.email);
+
+    if (emailExists) {
+      throw new Error("Email já cadastrado");
+    }
+
+    return UsersRepository.create(data);
+  }
+
+  async updateUser(id: number, data: any) {
+
+    const user = await UsersRepository.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    return UsersRepository.update(user, data);
+  }
+
+  async deleteUser(id: number) {
+
+    const user = await UsersRepository.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    await UsersRepository.delete(user);
+  }
+
+}
+
+export default new UsersService();
+```
+[⬆ Voltar ao topo](#top)
+### 7.6 **src/repositories**
+```javascript
+import User from "../models/User";
+
+class UsersRepository {
+
+  async findAll() {
+    return User.findAll();
+  }
+
+  async findById(id: number) {
+    return User.findByPk(id);
+  }
+
+  async findByEmail(email: string) {
+    return User.findOne({
+      where: { email }
+    });
+  }
+
+  async create(data: any) {
+    return User.create(data);
+  }
+
+  async update(user: any, data: any) {
+    return user.update(data);
+  }
+
+  async delete(user: any) {
+    return user.destroy();
+  }
+
+}
+
+export default new UsersRepository();
+```
+### 7.7 **src/controllers**
+```javascript
+import { Request, Response } from "express";
+import UsersService from "../services/UsersService";
+
+class UsersController {
+
+  async index(req: Request, res: Response) {
+
+    const users = await UsersService.listUsers();
+
+    return res.json(users);
+  }
+
+  async show(req: Request, res: Response) {
+
+    try {
+
+      const user = await UsersService.getUser(Number(req.params.id));
+
+      return res.json(user);
+
+    } catch (error: any) {
+
+      return res.status(404).json({
+        error: error.message
+      });
+
+    }
+  }
+
+  async create(req: Request, res: Response) {
+
+    try {
+
+      const user = await UsersService.createUser(req.body);
+
+      return res.status(201).json(user);
+
+    } catch (error: any) {
+
+      return res.status(400).json({
+        error: error.message
+      });
+
+    }
+  }
+
+  async update(req: Request, res: Response) {
+
+    try {
+
+      const user = await UsersService.updateUser(
+        Number(req.params.id),
+        req.body
+      );
+
+      return res.json(user);
+
+    } catch (error: any) {
+
+      return res.status(400).json({
+        error: error.message
+      });
+
+    }
+  }
+
+  async destroy(req: Request, res: Response) {
+
+    try {
+
+      await UsersService.deleteUser(Number(req.params.id));
+
+      return res.json({
+        message: "Usuário removido"
+      });
+
+    } catch (error: any) {
+
+      return res.status(400).json({
+        error: error.message
+      });
+
+    }
+  }
+
+}
+
+export default new UsersController();
+```
+
+[⬆ Voltar ao topo](#top)
+### 7.8 **src/routes/user.ts**
 ```javascript
 import { Router } from 'express';
 import User from '../models/User';
@@ -845,7 +1032,7 @@ router.post('/', async (req, res) => {
 
 export default router;
 ```
-### 7.6 **src/index.ts**
+### 7.9 **src/index.ts**
 ```javascript
 import express from 'express';
 import dotenv from 'dotenv';
@@ -871,8 +1058,8 @@ sequelize.sync().then(() => {
   console.error('Erro ao conectar ao banco:', err);
 });
 ```
-
 [⬆ Voltar ao topo](#top)
+
 ### 8. Adicione o script de dev no `package.json`
 ```javascript
 "scripts": {
