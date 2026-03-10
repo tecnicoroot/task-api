@@ -18,7 +18,7 @@ interface UserAttributes {
   date_of_birth?: Date;
   status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
   first_access?: boolean;
-  company_id?: number;
+  /*company_id?: number;*/
   criado_pelo_usuario?: number;
 }
 
@@ -32,8 +32,8 @@ interface UserCreationAttributes
     | "date_of_birth"
     | "status"
     | "first_access"
-    | "company_id"
-    | "criado_pelo_usuario"
+    | /*"company_id"*/
+     "criado_pelo_usuario"
   > {}
 
 class User
@@ -53,7 +53,7 @@ class User
   public date_of_birth?: Date;
   public status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
   public first_access?: boolean;
-  public company_id?: number;
+  /*public company_id?: number;*/
   public criado_pelo_usuario?: number;
 
   // verificar senha
@@ -159,11 +159,11 @@ User.init(
       field: "primeiro_acesso",
     },
 
-    company_id: {
+    /*company_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "id_empresa",
-    },
+    },*/
 
     criado_pelo_usuario: {
       type: DataTypes.INTEGER,
