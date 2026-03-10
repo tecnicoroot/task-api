@@ -1,0 +1,46 @@
+@port = 3000
+@host = localhost
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWRfZW1wcmVzYSI6bnVsbCwiaWF0IjoxNzY1NTQ4OTcxLCJleHAiOjE3NjU1NDk4NzF9.riwu3W1BjSLmP5C_bPesR58Z0Ij6faWSbghBMa2AsIg
+###
+GET http://{{host}}:{{port}}/companies
+content-type: application/json
+Authorization: Bearer {{token}}
+###
+
+GET http://{{host}}:{{port}}/companies/1
+content-type: application/json
+Authorization: Bearer {{token}}
+###
+POST http://{{host}}:{{port}}/companies
+content-type: application/json
+
+{
+  "trade_name": "teste3",
+  "corporate_name": "teste3",
+  "phone": "teste3",
+  "person_type": "Física",
+  "company_unit_type": "Matriz",
+  "status": "ACTIVATED",
+  "email": "teste4@teste.com",
+  "document": "123123"
+}
+
+###
+PUT  http://{{host}}:{{port}}/companies/1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "samples",
+  "email": "sample@sample.com",
+  "password": "12345678",
+  "passwordConfirmation" : "12345678"
+
+}
+
+###
+DELETE  http://{{host}}:{{port}}/companies/13
+content-type: application/json
+Authorization: Bearer {{token}}
+
+###

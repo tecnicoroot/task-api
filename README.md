@@ -10,27 +10,36 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
 <details open>
 <summary >📑 Índice</summary>
 
-- [1. Crie e acesse a pasta do projeto](#1-crie-e-acesse-a-pasta-do-projeto)
-- [2. Inicialize o projeto](#2-inicialize-o-projeto)
-- [3. Instale as dependências](#3-instale-as-dependencias)
-- [4. Crie o arquivo de configuração do TypeScript](#crie-o-arquivo-de-configuracao-do-typescript)
-- [5. Estrutura de pastas](#5-estrutura-de-pastas)
-- [6. Crie o arquivo .env](#6-crie-o-arquivo-env)
-  - [Configuração do Sequelize](#61-configuracao-do-sequelize)
-  - [6.2 Criação das Migrations](#62-criacao-das-migrations)
-  - [6.3 Criação do Seeder](#63-criacao-do-seeder)
-- [7. Código dos arquivos principais](#7-codigo-dos-arquivos-principais)
-- [8. Adicione o script de dev no package.json](#8-adicione-o-script-de-dev-no-packagejson)
-- [9. Rode o projeto](#9-rode-o-projeto)
-- [10. Validação de Dados](#10-validacao-de-dados)
-- [11. Atualizar e Deletar Usuário](#11-atualizar-e-deletar-usuario)
-- [12. Autenticação JWT](#12-autenticacao-jwt)
-- [13. Relacionamento entre Models](#13-relacionamento-entre-models)
-- [14. Paginação](#14-paginacao)
-- [15. Filtros e Busca](#15-filtros-e-busca)
-- [16. CORS](#16-cors)
-- [17. Versionamento com Git e Github](#17-versionamento-com-git-e-github)
-- [Comandos do Sequelize](#comandos-do-sequelize)
+-  [x] [1. Crie e acesse a pasta do projeto](#1-crie-e-acesse-a-pasta-do-projeto)
+- [x] [2. Inicialize o projeto](#2-inicialize-o-projeto)
+- [x]  [3. Instale as dependências](#3-instale-as-dependencias)
+- [x]  [4. Crie o arquivo de configuração do TypeScript](#crie-o-arquivo-de-configuracao-do-typescript)
+- [x] [5. Estrutura de pastas](#5-estrutura-de-pastas)
+- [x]  [6. Crie o arquivo .env](#6-crie-o-arquivo-env)
+  - [x]  [6.1 Configuração do Sequelize](#61-configuracao-do-sequelize)
+  - [x]  [6.2 Criação das Migrations](#62-criacao-das-migrations)
+  - [x]  [6.3 Criação do Seeder](#63-criacao-do-seeder)
+- [ ]  [7. Código dos arquivos principais](#7-codigo-dos-arquivos-principais)
+  - [x] [7.1 src/config/database.ts](#71-srcconfigdatabasets)
+  - [x] [7.2 src/models/Role.ts](#72-srcmodelsrolets)
+  - [x] [7.3 src/models/Permission.ts](#73-srcmodelspermissionts)
+  - [x] [7.4 src/models/User.ts](#74-srcmodelsuserts)
+  - [ ] [7.5 src/repositories]()
+  - [ ] [7.6 src/services]()
+  - [ ] [7.7 src/controllers]()
+  - [ ] [7.8 src/routes/user.ts](#75-srcroutesuserts)
+  - [ ] [7.9 src/index.ts](#76-srcindexts)
+- [x]  [8. Adicione o script de dev no package.json](#8-adicione-o-script-de-dev-no-packagejson)
+- [ ]  [9. Rode o projeto](#9-rode-o-projeto)
+- [ ]  [10. Validação de Dados](#10-validacao-de-dados)
+- [ ]  [11. Atualizar e Deletar Usuário](#11-atualizar-e-deletar-usuario)
+- [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
+- [ ]  [13. Relacionamento entre Models](#13-relacionamento-entre-models)
+- [ ]  [14. Paginação](#14-paginacao)
+- [ ]  [15. Filtros e Busca](#15-filtros-e-busca)
+- [ ]  [16. CORS](#16-cors)
+- [ ]  [17. Versionamento com Git e Github](#17-versionamento-com-git-e-github)
+- [ ]  [Comandos do Sequelize](#comandos-do-sequelize)
 
 </details>
 
@@ -470,7 +479,7 @@ module.exports = {
 ```
 [⬆ Voltar ao topo](#top)
 ### 7. Código dos arquivos principais
-**src/config/database.ts**
+### 7.1 **src/config/database.ts**
 
 ```javascript
 import { Sequelize } from 'sequelize';
@@ -492,8 +501,8 @@ const sequelize = new Sequelize(
 
 export default sequelize;
 ```
+### 7.2 **src/models/Role.ts**
 
-```src/models/Role.ts```
 ```javascript
 import { Model, DataTypes } from "sequelize";
 import type { Optional } from "sequelize";
@@ -556,7 +565,7 @@ Role.init(
 
 export default Role;
 ```
-```src/models/Permission.ts```
+### 7.3 **src/models/Permission.ts**
 ```javascript
 import { Model, DataTypes } from "sequelize";
 import type { Optional } from "sequelize";
@@ -612,7 +621,7 @@ Permission.init(
 export default Permission;
 ```
 
-```src/models/User.ts```
+### 7.4 **src/models/User.ts**
 ```javascript
 import { DataTypes, Model } from "sequelize";
 import type { Optional } from "sequelize";
@@ -812,7 +821,7 @@ export default User;
 ```
 
 
-**src/routes/user.ts**
+### 7.5 **src/routes/user.ts**
 ```javascript
 import { Router } from 'express';
 import User from '../models/User';
@@ -836,7 +845,7 @@ router.post('/', async (req, res) => {
 
 export default router;
 ```
-**src/index.ts**
+### 7.6 **src/index.ts**
 ```javascript
 import express from 'express';
 import dotenv from 'dotenv';
@@ -862,6 +871,7 @@ sequelize.sync().then(() => {
   console.error('Erro ao conectar ao banco:', err);
 });
 ```
+
 [⬆ Voltar ao topo](#top)
 ### 8. Adicione o script de dev no `package.json`
 ```javascript

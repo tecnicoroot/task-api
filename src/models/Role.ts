@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import type { Optional } from "sequelize";
-import sequelize from "../config/database.ts";
+import sequelize from "../config/database";
 
 interface RoleAttributes {
   id: number;

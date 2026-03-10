@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import type { Optional } from "sequelize";
 import bcrypt from "bcrypt";
 import md5 from "md5";
-import sequelize from "../config/database.ts";
+import sequelize from "../config/database";
 
 interface UserAttributes {
   id: number;
