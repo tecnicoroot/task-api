@@ -32,6 +32,8 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
 - [x]  [8. Adicione o script de dev no package.json](#8-adicione-o-script-de-dev-no-packagejson)
 - [x]  [9. Rode o projeto](#9-rode-o-projeto)
 - [ ]  [10. Validação de Dados](#10-validacao-de-dados)
+  - [ ]  [10.1 src\middlesware\handleValidation](#101-srcmiddleswarehandleValidation)
+  - [ ]  [10.2 src\validators\UserValidatior](#102)-srcvalidatorsUserValidatior
 - [ ]  [11. Atualizar e Deletar Usuário](#11-atualizar-e-deletar-usuario)
 - [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
 - [ ]  [13. Relacionamento entre Models](#13-relacionamento-entre-models)
@@ -49,17 +51,20 @@ mkdir meu-projeto
 cd meu-projeto
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 2. Inicialize o projeto
 ```bash
 yarn init -y
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 3. Instale as dependências
 ```bash
-yarn add express sequelize pg pg-hstore dotenv sequelize-typescript bcrypt md5
-yarn add -D typescript @types/express @types/node nodemon ts-node sequelize-cli @types/sequelize @types/bcrypt @types/md5
+yarn add express sequelize pg pg-hstore dotenv sequelize-typescript  md5 express-validator bcryptjs express-validator
+yarn add -D typescript @types/express @types/node nodemon ts-node sequelize-cli @types/sequelize @types/bcryptjs @types/md5
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 4. Crie o arquivo de configuração do TypeScript
 ```bash
 npx tsc --init
@@ -78,6 +83,7 @@ Edite o `tsconfig.json` para garantir as opções abaixo:
 }
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 5. Estrutura de pastas
 Organize assim:
 ```bash
@@ -94,6 +100,7 @@ project/
 └── .env
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 6. Crie o arquivo **.env**
 Exemplo:
 ```
@@ -127,6 +134,7 @@ API_PORT_PRONT=
 
 ```
 [⬆ Voltar ao topo](#top)
+
 #### 6.1 Configuração do Sequelize.
 '''
     yarn sequelize init'''
@@ -452,7 +460,7 @@ RolePermission.init(
 
 ```
 [⬆ Voltar ao topo](#top)
-### 6.3 Criação do Seeder
+#### 6.3 Criação do Seeder
 ```javascript
 'use strict';
 
@@ -478,8 +486,9 @@ module.exports = {
 };
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 7. Código dos arquivos principais
-### 7.1 **src/config/database.ts**
+#### 7.1 **src/config/database.ts**
 
 ```javascript
 import { Sequelize } from 'sequelize';
@@ -501,7 +510,7 @@ const sequelize = new Sequelize(
 
 export default sequelize;
 ```
-### 7.2 **src/models/Role.ts**
+#### 7.2 **src/models/Role.ts**
 
 ```javascript
 import { Model, DataTypes } from "sequelize";
@@ -565,7 +574,7 @@ Role.init(
 
 export default Role;
 ```
-### 7.3 **src/models/Permission.ts**
+#### 7.3 **src/models/Permission.ts**
 ```javascript
 import { Model, DataTypes } from "sequelize";
 import type { Optional } from "sequelize";
@@ -620,8 +629,7 @@ Permission.init(
 
 export default Permission;
 ```
-
-### 7.4 **src/models/User.ts**
+#### 7.4 **src/models/User.ts**
 ```javascript
 import { DataTypes, Model } from "sequelize";
 import type { Optional } from "sequelize";
@@ -820,7 +828,7 @@ User.beforeSave(async (user: User) => {
 export default User;
 ```
 [⬆ Voltar ao topo](#top)
-### 7.5 **src/services**
+#### 7.5 **src/services**
 ```javascript
 import UsersRepository from "../repositories/UsersRepository";
 
@@ -879,7 +887,7 @@ class UsersService {
 export default new UsersService();
 ```
 [⬆ Voltar ao topo](#top)
-### 7.6 **src/repositories**
+#### 7.6 **src/repositories**
 ```javascript
 import User from "../models/User";
 
@@ -915,7 +923,7 @@ class UsersRepository {
 
 export default new UsersRepository();
 ```
-### 7.7 **src/controllers**
+#### 7.7 **src/controllers**
 ```javascript
 import { Request, Response } from "express";
 import UsersService from "../services/UsersService";
@@ -1008,7 +1016,7 @@ export default new UsersController();
 ```
 
 [⬆ Voltar ao topo](#top)
-### 7.8 **src/routes/user.ts**
+#### 7.8 **src/routes/user.ts**
 ```javascript
 import { Router } from 'express';
 import User from '../models/User';
@@ -1032,7 +1040,7 @@ router.post('/', async (req, res) => {
 
 export default router;
 ```
-### 7.9 **src/index.ts**
+#### 7.9 **src/index.ts**
 ```javascript
 import express from 'express';
 import dotenv from 'dotenv';
@@ -1067,6 +1075,8 @@ sequelize.sync().then(() => {
 }
 ```
 [⬆ Voltar ao topo](#top)
+
+
 ### 9. Rode o projeto
 ```bash
 npm run dev
@@ -1091,27 +1101,97 @@ npm install express-validator
 ou
 yarn add express-validator
 ```
-Exemplo no user.ts:
-```javascript
-import { body, validationResult } from 'express-validator';
 
-// No POST de usuário:
-router.post(
-  '/',
-  [
-    body('name').notEmpty().withMessage('Nome é obrigatório'),
-    body('email').isEmail().withMessage('E-mail inválido')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    // ... restante igual
-  }
-);
+Para uma melhor organização criar uma pasta src\validators.
+Vou criar tambem uma pasta src\middlewares
+
+#### 10.1 **src\middlesware\handleValidation.ts**
+```javascript
+import { Request, Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
+export const handleValidation = (
+  req: Request,
+  res: Response,
+next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array(),
+  });
+}
+  next();
+};
 ```
+
 [⬆ Voltar ao topo](#top)
+
+#### 10.2 **src\validators\UserValidatior.ts**
+```javascript
+import { body } from 'express-validator';
+import { param } from "express-validator";
+
+export const createUserValidation = [
+  body('name')
+    .notEmpty().withMessage('Nome é obrigatório')
+    .isLength({ min: 3 }).withMessage('Nome deve ter no mínimo 3 caracteres'),
+
+  body('date_of_birth')
+    .notEmpty().withMessage('Data de nascimento é obrigatório')
+    .isLength({ min: 3 }).withMessage('Nome deve ter no mínimo 3 caracteres'),
+
+  body('email')
+    .notEmpty().withMessage('Email é obrigatório')
+    .isEmail().withMessage('Email inválido'),
+
+  body('password')
+    .notEmpty().withMessage('Senha é obrigatória')
+    .isLength({ min: 6 }).withMessage('Senha deve ter no mínimo 6 caracteres'),
+
+  body('passwordConfirmation')
+    .custom((value, { req }) =>
+        value === req.body.password
+    )
+    .withMessage('As senhas não coincidem'),
+];
+
+export const updateUserValidation = [
+  body('name')
+    .notEmpty().withMessage('Nome é obrigatório')
+    .isLength({ min: 3 }).withMessage('Nome deve ter no mínimo 3 caracteres'),
+
+  body('date_of_birth')
+    .notEmpty().withMessage('Data de nascimento é obrigatório'),
+
+  body('email')
+    .notEmpty().withMessage('Email é obrigatório')
+    .isEmail().withMessage('Email inválido'),
+
+  body('oldPassword')
+    .notEmpty().withMessage('Senha antiga é obrigatória'),
+
+  body('password')
+    .notEmpty().withMessage('Senha é obrigatória')
+    .isLength({ min: 6 }).withMessage('Senha deve ter no mínimo 6 caracteres'),
+
+  body('passwordConfirmation')
+    .custom((value, { req }) =>
+        value === req.body.password
+    )
+    .withMessage('As senhas não coincidem'),
+];
+
+export const deleteUserValidation = [
+  param("id")
+    .notEmpty().withMessage("ID é obrigatório")
+    .isInt().withMessage("ID deve ser um número"),
+];
+
+```
+
+
+[⬆ Voltar ao topo](#top)
+
 ### 11.  Atualizar e Deletar Usuário
 Adicione no **user.ts**:
 ```javascript
@@ -1145,6 +1225,7 @@ router.delete('/:id', async (req, res) => {
 });
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 12. Autenticação JWT
 Instale:
 <pre>
@@ -1180,7 +1261,8 @@ router.post('/login', async (req, res) => {
 });
 ```
 [⬆ Voltar ao topo](#top)
-#### 13. Relacionamento entre Models
+
+### 13. Relacionamento entre Models
 Exemplo: Usuários e Posts
 
 Crie `src/models/Post.ts:`
@@ -1227,6 +1309,7 @@ export default Post;
 ```
 Crie rotas para Posts em `src/routes/post.ts` e importe em index.ts.
 [⬆ Voltar ao topo](#top)
+
 ### 14. Paginação
 No GET de usuários:
 ```javascript
@@ -1242,6 +1325,7 @@ router.get('/', async (req, res) => {
 });
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 15. Filtros e Busca
 ```javascript
 router.get('/', async (req, res) => {
@@ -1254,6 +1338,7 @@ router.get('/', async (req, res) => {
 ```
 Lembre-se de importar Op do Sequelize: import { Op } from 'sequelize';
 [⬆ Voltar ao topo](#top)
+
 ### 16. CORS
 Instalar:
 ```bash
@@ -1267,6 +1352,7 @@ import cors from 'cors';
 app.use(cors());
 ```
 [⬆ Voltar ao topo](#top)
+
 ### 17. Versionamento com Git/Github
 git clone https://github.com/tecnicoroot/task-api.git
 git add ./

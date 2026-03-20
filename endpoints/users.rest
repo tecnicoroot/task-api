@@ -22,7 +22,7 @@ content-type: application/json
   "name": "David Luis da Siva",
   "phone_number": "32 987075868",
   "date_of_birth": "1983-06-19",
-  "email": "tecnicoroot2@gmail.com",
+  "email": "tecnicoroot4@gmail.com",
   "password": "12345678",
   "passwordConfirmation" : "12345678"
 
@@ -42,20 +42,22 @@ Authorization: Bearer {{token}}
 }
 
 ###
-PUT  http://{{host}}:{{port}}/users/2
+PUT  http://{{host}}:{{port}}/users/3
 content-type: application/json
 Authorization: Bearer {{token}}
 
 {
   "name": "samples",
   "email": "sample@sample.com",
+  "date_of_birth": "1",
   "password": "12345678",
-  "passwordConfirmation" : "12345678"
+  "passwordConfirmation" : "12345678",
+  "oldPassword": "1"
 
 }
 
 ###
-DELETE  http://{{host}}:{{port}}/users/2
+DELETE  http://{{host}}:{{port}}/users/4l
 content-type: application/json
 Authorization: Bearer {{token}}
 
