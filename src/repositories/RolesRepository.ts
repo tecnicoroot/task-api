@@ -1,9 +1,12 @@
-import Role from "../models/Role";
+import db from '../models';
+const { Role, Permission } = db;
 
 class RolesRepository {
-    async findAll(){
-        return Role.findAll();
-    };
+    async findAll() {
+      return Role.findAll({
+        include: { model: Permission, as: 'permissions', attributes: ['id', 'name'] }
+      });
+    }
 
     async findById(id: number){ 
         return Role.findByPk(id)
@@ -28,6 +31,26 @@ class RolesRepository {
         return role.destroy();
     };
 
+    
+
+    async addPermissions(roleId: number, permissionIds: number[]) {
+    const role = await Role.findByPk(roleId);
+
+    if (!role) throw new Error("Perfil não encontrado");
+
+    // ✅ Agora setPermissions existe
+    await role.addPermissions(permissionIds);
+
+    return await role.getPermissions({ attributes: ['id', 'name'] });
+  }
+
+  async showPermissionById(roleId: number) {
+    const role = await Role.findByPk(roleId, {
+      include: { model: Permission, as: 'permissions', attributes: ['id', 'name'] }
+    });
+
+    return role?.permissions ?? [];
+  }
 }
 
 export default new RolesRepository();

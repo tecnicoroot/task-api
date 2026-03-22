@@ -11,7 +11,7 @@ GET http://{{host}}:{{port}}/activation/
 }
 ###
 
-GET http://{{host}}:{{port}}/users/2
+GET http://{{host}}:{{port}}/users/
 content-type: application/json
 Authorization: Bearer {{token}}
 ###
@@ -22,7 +22,7 @@ content-type: application/json
   "name": "David Luis da Siva",
   "phone_number": "32 987075868",
   "date_of_birth": "1983-06-19",
-  "email": "tecnicoroot4@gmail.com",
+  "email": "tecnicoroot5@gmail.com",
   "password": "12345678",
   "passwordConfirmation" : "12345678"
 
@@ -71,7 +71,7 @@ Authorization: Bearer {{token}}
 
 ##
 ###
-PUT  http://{{host}}:{{port}}/users/47/roles
+PUT  http://{{host}}:{{port}}/users/6/roles
 content-type: application/json
 Authorization: Bearer {{token}}
 

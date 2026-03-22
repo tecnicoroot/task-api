@@ -23,7 +23,7 @@ class Permission
       foreignKey: "permission_id",
       otherKey: "role_id",
       as: "roles",
-      timestamps: false,
+      timestamps: true,
     });
   }
 }
@@ -48,6 +48,7 @@ Permission.init(
     tableName: "permissions",
     modelName: "Permission",
     underscored: true,
+    timestamps: false,
     createdAt: "criado_em",
     updatedAt: "atualizado_em",
   }

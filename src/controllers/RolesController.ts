@@ -83,7 +83,36 @@ class RolesController {
     }
   }
 
+  async showPermissionById(req: Request, res: Response){
+    try {
+
+      const permissions = await RolesService.showPermissionById(Number(req.params.id));
+
+      return res.status(200).json(permissions);
+
+    } catch (error: any) {
+
+      return res.status(400).json({
+        error: error.message
+      });
+
+    }
+  }
   
+  async addPermissionsToRole(req: Request, res: Response){
+try {
+      const { permissions } = req.body
+      await RolesService.addPermissionsToRole(Number(req.params.id), permissions)
+      return res.json({ success: true });
+
+    } catch (error: any) {
+
+      return res.status(400).json({
+        error: error.message
+      });
+
+    }
+  }
 
 }
 

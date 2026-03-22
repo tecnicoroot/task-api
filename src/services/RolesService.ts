@@ -49,7 +49,32 @@ class RolesService{
 
     await RolesRepository.delete(role);
   }
-    
+
+  async showPermissionById(id: number){
+    const roles = await RolesRepository.showPermissionById(id)
+
+
+    if (roles.length === 0) {
+      throw new Error("Nenhuma permissão foi encontrada");
+    }
+
+    return roles;
+
+  }
+
+  async addPermissionsToRole(id: number, permissionsIds: number[]) {
+    if (!Array.isArray(permissionsIds)) {
+      throw new Error("Formato inválido");
+    }
+
+    const role = await RolesRepository.findById(id);
+
+    if (!role) {
+      throw new Error("Perfil não foi encontrado");
+    }
+
+    return RolesRepository.addPermissions(role.id, permissionsIds);
+  }
 }
 
 export default new RolesService();
