@@ -34,7 +34,7 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
 - [ ]  [10. Validação de Dados](#10-validacao-de-dados)
   - [ ]  [10.1 src\middlesware\handleValidation](#101-srcmiddleswarehandleValidation)
   - [ ]  [10.2 src\validators\UserValidatior](#102)-srcvalidatorsUserValidatior
-- [ ]  [11. Atualizar e Deletar Usuário](#11-atualizar-e-deletar-usuario)
+- [ ]  [11. Fluxo Sistema](#11-fluxo-sistema)
 - [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
 - [ ]  [13. Relacionamento entre Models](#13-relacionamento-entre-models)
 - [ ]  [14. Paginação](#14-paginacao)
@@ -1192,38 +1192,18 @@ export const deleteUserValidation = [
 
 [⬆ Voltar ao topo](#top)
 
-### 11.  Atualizar e Deletar Usuário
-Adicione no **user.ts**:
-```javascript
-// Atualizar usuário
-router.put('/:id', async (req, res) => {
-  const { name, email } = req.body;
-  const { id } = req.params;
-  try {
-    const user = await User.findByPk(id);
-    if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-    user.name = name || user.name;
-    user.email = email || user.email;
-    await user.save();
-    res.json(user);
-  } catch (err) {
-    res.status(400).json({ error: 'Erro ao atualizar', details: err });
-  }
-});
+### 11. Fluxo Sistema
 
-// Deletar usuário
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await User.findByPk(id);
-    if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-    await user.destroy();
-    res.status(204).send();
-  } catch (err) {
-    res.status(400).json({ error: 'Erro ao deletar', details: err });
-  }
-});
-```
+Entrada:
+```rota  -> controle -> serviço -> repositorio```
+
+Saida:
+```repositorio -> serviço -> controle -> rota```
+
+
+
+
+
 [⬆ Voltar ao topo](#top)
 
 ### 12. Autenticação JWT
@@ -1363,3 +1343,9 @@ git remote remove origin
 git remote add origin git@github.com:tecnicoroot/task-api.git
 git remote -v
 git push origin main
+
+### 18. Comandos Sequelize
+```
+yarn sequelize seed:create --name PermissionsSeeder
+yarn sequelize db:seed --seed 20260322000251-PermissionsSeeder.cjs
+```

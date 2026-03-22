@@ -34,18 +34,22 @@ Permission.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      
     },
 
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "nome",
     },
   },
   {
     sequelize,
     tableName: "permissions",
     modelName: "Permission",
-    timestamps: false,
+    underscored: true,
+    createdAt: "criado_em",
+    updatedAt: "atualizado_em",
   }
 );
 

@@ -15,7 +15,7 @@ class Role
   implements RoleAttributes
 {
   public id!: number;
-  public name!: string;
+  public name: string;
 
   static associate(models: any) {
     this.belongsToMany(models.User, {
@@ -47,13 +47,17 @@ Role.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "nome",
     },
   },
   {
     sequelize,
     tableName: "roles",
     modelName: "Role",
-    timestamps: false,
+    
+    underscored: true,
+    createdAt: "criado_em",
+    updatedAt: "atualizado_em",
   }
 );
 

@@ -1,0 +1,38 @@
+@port = 3000
+@host = localhost
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDUsImNvbXBhbnlfaWQiOm51bGwsInJvbGVzIjpbXSwiaWF0IjoxNzY2MTc0NDQ4LCJleHAiOjE3NjYxNzUzNDh9.hsGdrr6mr8HG_pz1eZ3CVomZDfMdIyZFM6f68JpWiVY
+
+GET http://{{host}}:{{port}}/permissions/
+content-type: application/json
+Authorization: Bearer {{token}}
+###
+
+POST http://{{host}}:{{port}}/permissions
+content-type: application/json
+
+{
+  "name": "delete_user"
+}
+###
+/*
+    create_role
+    read_role
+    update_role
+    delete_role
+
+*/
+
+###
+PUT  http://{{host}}:{{port}}/permissions/1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "samples"
+}
+
+###
+DELETE  http://{{host}}:{{port}}/permissions/1
+content-type: application/json
+Authorization: Bearer {{token}}
+
