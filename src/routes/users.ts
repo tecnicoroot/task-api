@@ -11,4 +11,6 @@ routes.post("/users", createUserValidation, handleValidation, UsersController.cr
 routes.put("/users/:id", updateUserValidation, handleValidation, UsersController.update);
 routes.delete("/users/:id", deleteUserValidation, handleValidation, UsersController.destroy);
 
+routes.get('/users/:id/roles', UsersController.showPermissionById);
+routes.put('/users/:id/roles', UsersController.addPermissionsToRole);
 export default routes;

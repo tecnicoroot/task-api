@@ -64,17 +64,17 @@ Authorization: Bearer {{token}}
 ###
 
 
-GET http://{{host}}:{{port}}/users/1/roles
+GET http://{{host}}:{{port}}/users/4/roles
 content-type: application/json
 Authorization: Bearer {{token}}
-/users/:id/roles
+
 
 ##
 ###
-PUT  http://{{host}}:{{port}}/users/6/roles
+PUT  http://{{host}}:{{port}}/users/4/roles
 content-type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "roles": []
+  "roles": [6]
 }

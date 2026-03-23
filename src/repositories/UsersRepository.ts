@@ -1,4 +1,5 @@
-import User from "../models/User";
+import db from '../models';
+const { User, Role } = db;
 
 class UsersRepository {
 
@@ -26,6 +27,27 @@ class UsersRepository {
 
   async delete(user: any) {
     return user.destroy();
+  }
+
+  async addRoles(userId: number, rolesIds: number[]) {
+    const user = await User.findByPk(userId);
+
+    if (!user) throw new Error("Perfil não encontrado");
+
+    // ✅ Agora setPermissions existe
+    await user.addRoles(rolesIds);
+
+    return await user.getRoles({ attributes: ['id', 'name'] });
+  }
+
+  async showRolesById(userId: number) {
+    const user = await User.findByPk(userId, {
+      include: { model: Role, as: 'roles', attributes: ['id', 'name'] }
+    });
+
+    if (!user) throw new Error("Usuário não encontrado");
+
+    return user.roles;
   }
 
 }

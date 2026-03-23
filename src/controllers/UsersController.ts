@@ -83,6 +83,36 @@ class UsersController {
     }
   }
 
+  async showPermissionById(req: Request, res: Response){
+      try {
+  
+        const roles = await UsersService.showRolesById(Number(req.params.id));
+  
+        return res.status(200).json(roles);
+  
+      } catch (error: any) {
+  
+        return res.status(400).json({
+          error: error.message
+        });
+  
+      }
+    }
+    
+    async addPermissionsToRole(req: Request, res: Response){
+    try {
+          const { roles } = req.body
+          await UsersService.addRolesToUser(Number(req.params.id), roles)
+          return res.json({ success: true });
+    
+        } catch (error: any) {
+    
+          return res.status(400).json({
+            error: error.message
+          });
+    
+        }
+    }
   
 
 }

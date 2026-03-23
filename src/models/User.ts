@@ -1,8 +1,9 @@
-import { DataTypes, Model } from "sequelize";
+import { Model, DataTypes, NonAttribute, BelongsToManySetAssociationsMixin, BelongsToManyGetAssociationsMixin } from 'sequelize';
 import type { Optional } from "sequelize";
 import bcrypt from "bcrypt";
 import md5 from "md5";
 import sequelize from "../config/database";
+import Role from "./Role";
 
 interface UserAttributes {
   id: number;
@@ -56,6 +57,13 @@ class User
   /*public company_id?: number;*/
   public criado_pelo_usuario?: number;
 
+  // ⚡ Tipagem correta para Sequelize
+  public Roles?: NonAttribute<Role[]>;
+
+  // ✅ Mixins gerados pelo belongsToMany
+  public getPermissions!: BelongsToManyGetAssociationsMixin<Role>;
+  public setPermissions!: BelongsToManySetAssociationsMixin<Role, number>;
+
   // verificar senha
   public checkPassword(password: string) {
     return bcrypt.compare(password, this.password_hash);
@@ -80,10 +88,10 @@ class User
   }
 
   static associate(models: any) {
-    this.belongsTo(models.Company, {
+    /*this.belongsTo(models.Company, {
       foreignKey: "id_empresa",
       as: "company",
-    });
+    });*/
 
     this.belongsTo(models.User, {
       foreignKey: "criado_pelo_usuario",
@@ -100,7 +108,7 @@ class User
       foreignKey: "user_id",
       otherKey: "role_id",
       as: "roles",
-      timestamps: false,
+      timestamps: true,
     });
   }
 }
@@ -175,8 +183,9 @@ User.init(
     tableName: "usuarios",
     modelName: "User",
     underscored: true,
-    createdAt: "criado_em",
-    updatedAt: "atualizado_em",
+    timestamps: false,
+    createdAt: 'criado_em',
+    updatedAt: 'atualizado_em',
   }
 );
 

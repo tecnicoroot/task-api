@@ -31,8 +31,6 @@ class RolesRepository {
         return role.destroy();
     };
 
-    
-
     async addPermissions(roleId: number, permissionIds: number[]) {
     const role = await Role.findByPk(roleId);
 
