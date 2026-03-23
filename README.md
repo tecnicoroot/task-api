@@ -31,9 +31,10 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
   - [x] [7.9 src/index.ts]()
 - [x]  [8. Adicione o script de dev no package.json](#8-adicione-o-script-de-dev-no-packagejson)
 - [x]  [9. Rode o projeto](#9-rode-o-projeto)
-- [ ]  [10. Validação de Dados](#10-validacao-de-dados)
-  - [ ]  [10.1 src\middlesware\handleValidation](#101-srcmiddleswarehandleValidation)
-  - [ ]  [10.2 src\validators\UserValidatior](#102)-srcvalidatorsUserValidatior
+- [x]  [10. Validação de Dados](#10-validacao-de-dados)
+  - [x]  [10.1 src\middleware\handleValidation](#101-srcmiddlewarehandleValidation)
+  - [x]  [10.2 src\middleware\handlePermissions](#102-srcmiddlewarehandlepermissions)
+  - [x]  [10.3 src\validators\UserValidatior](#102)-srcvalidatorsUserValidatior
 - [ ]  [11. Fluxo Sistema](#11-fluxo-sistema)
 - [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
 - [ ]  [13. Relacionamento entre Models](#13-relacionamento-entre-models)
@@ -1105,7 +1106,7 @@ yarn add express-validator
 Para uma melhor organização criar uma pasta src\validators.
 Vou criar tambem uma pasta src\middlewares
 
-#### 10.1 **src\middlesware\handleValidation.ts**
+#### 10.1 **src\middleware\handleValidation.ts**
 ```javascript
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
@@ -1125,8 +1126,48 @@ next: NextFunction
 ```
 
 [⬆ Voltar ao topo](#top)
+#### 10.2 **src\middleware\checkPermissions.ts**
+```javascript
+import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 
-#### 10.2 **src\validators\UserValidatior.ts**
+declare global {
+  namespace Express {
+    interface User {
+      permissions: string[];
+    }
+
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
+type Mode = "some" | "every";
+
+export function checkPermissions(
+  permissions: string[],
+  mode: Mode = "some"
+) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userPermissions = req.user?.permissions || [];
+
+    const hasAccess =
+      mode === "every"
+        ? permissions.every(p => userPermissions.includes(p))
+        : permissions.some(p => userPermissions.includes(p));
+
+    if (!hasAccess) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    next();
+  };
+}
+```
+
+[⬆ Voltar ao topo](#top)
+#### 10.3 **src\validators\UserValidatior.ts**
 ```javascript
 import { body } from 'express-validator';
 import { param } from "express-validator";
@@ -1198,10 +1239,15 @@ Entrada:
 ```rota  -> controle -> serviço -> repositorio```
 
 Saida:
-```repositorio -> serviço -> controle -> rota```
+```repositorio -> serviço -> controle -> view```
 
+Iremos tambem acrescentar mais um passo o middleware 
 
+Entrada:
+```rota -> middleware -> controle -> serviço -> repositorio```
 
+Saida:
+```repositorio -> serviço -> controle -> middleware -> view```
 
 
 [⬆ Voltar ao topo](#top)
