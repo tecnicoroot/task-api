@@ -1,10 +1,13 @@
-import User from "../models/User";
 import UsersRepository from "../repositories/UsersRepository";
 
 class UsersService {
 
   async listUsers() {
     return UsersRepository.findAll();
+  }
+
+  async findOne(){
+
   }
 
   async getUser(id: number) {

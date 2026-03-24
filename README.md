@@ -35,7 +35,7 @@ API REST construída com **Node.js**, **TypeScript**, **Express** e **Sequelize*
   - [x]  [10.1 src\middleware\handleValidation](#101-srcmiddlewarehandleValidation)
   - [x]  [10.2 src\middleware\handlePermissions](#102-srcmiddlewarehandlepermissions)
   - [x]  [10.3 src\validators\UserValidatior](#102)-srcvalidatorsUserValidatior
-- [ ]  [11. Fluxo Sistema](#11-fluxo-sistema)
+- [x]  [11. Fluxo Sistema](#11-fluxo-sistema)
 - [ ]  [12. Autenticação JWT](#12-autenticacao-jwt)
 - [ ]  [13. Relacionamento entre Models](#13-relacionamento-entre-models)
 - [ ]  [14. Paginação](#14-paginacao)
@@ -1253,39 +1253,16 @@ Saida:
 [⬆ Voltar ao topo](#top)
 
 ### 12. Autenticação JWT
-Instale:
+Caso ainda não tenha instalado os pacotes abaixo instale:
 <pre>
 npm install jsonwebtoken bcryptjs
 ou
 yarn add jsonwebtoken bcryptjs
 </pre>
-No User model, adicione campo password (e ajuste migrations/tabela):
-```javascript
-password: { type: DataTypes.STRING, allowNull: false }
-```
-No cadastro:
-```javascript
-import bcrypt from 'bcryptjs';
-const hashedPassword = await bcrypt.hash(password, 10);
-const user = await User.create({ name, email, password: hashedPassword });
-```
-No login (crie rota /login):
-```javascript
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ where: { email } });
-  if (!user) return res.status(401).json({ error: 'Usuário não encontrado' });
+#### 12.1 src\middleware\handleAuth.ts
+#### 12.12 src\controllers\AuthController.ts
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: 'Senha inválida' });
-
-  const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
-  res.json({ token });
-});
-```
 [⬆ Voltar ao topo](#top)
 
 ### 13. Relacionamento entre Models

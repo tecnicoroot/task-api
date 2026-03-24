@@ -1,5 +1,5 @@
 import db from '../models';
-const { User, Role } = db;
+const { User, Role, Permission} = db;
 
 class UsersRepository {
 
@@ -50,6 +50,25 @@ class UsersRepository {
     return user.roles;
   }
 
+  async findByEmailWithRoles(email: string) {
+    return User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Role,
+          as: "roles",
+          required: false,
+          include: [
+            { model: Permission, as: "permissions", required: false },
+          ],
+        },
+      ],
+    });
+  }
+
+  async save(user: any) {
+    return user.save();
+  }
 }
 
 export default new UsersRepository();

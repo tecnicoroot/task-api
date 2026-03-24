@@ -1,11 +1,11 @@
 @port = 3000
 @host = localhost
 ###
-POST http://{{host}}:{{port}}/session
+POST http://{{host}}:{{port}}/auth
 
 
 ###
-POST http://{{host}}:{{port}}/session
+POST http://{{host}}:{{port}}/auth
 content-type: application/json
 
 {
