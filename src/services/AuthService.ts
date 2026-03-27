@@ -44,8 +44,9 @@ class SessionService {
     const token = jwt.sign(
       {
         id: user.id,
-        company_id: user.company_id,
-        roles: user.roles?.map((r: any) => r.name) || [],
+        type_access: user.type_access ?? "Colaborador",
+        permissions, 
+        /*roles: user.roles?.map((r: any) => r.name) || [],*/
       },
       authConfig.secret,
       {
@@ -58,7 +59,7 @@ class SessionService {
         id: user.id,
         name: user.name,
         email: user.email,
-        company_id: user.company_id,
+        type_access: user.type_access,
         permissions,
       },
       token,

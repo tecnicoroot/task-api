@@ -8,7 +8,7 @@ const routes = Router();
 
 routes.get("/users", UsersController.index);
 routes.get("/users/:id", UsersController.show);
-routes.post("/users", checkPermissions([""]), createUserValidation, handleValidation, UsersController.create);
+routes.post("/users", checkPermissions(["superadmin", "create_user"] ), createUserValidation, handleValidation, UsersController.create);
 routes.put("/users/:id", updateUserValidation, handleValidation, UsersController.update);
 routes.delete("/users/:id", deleteUserValidation, handleValidation, UsersController.destroy);
 

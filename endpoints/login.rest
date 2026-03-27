@@ -9,7 +9,7 @@ POST http://{{host}}:{{port}}/auth
 content-type: application/json
 
 {
-  "email": "admin@example.com",
+  "email": "tecnicoroot3@gmail.com",
   "password": "12345678"
 }
 

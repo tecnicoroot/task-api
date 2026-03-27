@@ -1,8 +1,7 @@
 @port = 3000
 @host = localhost
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDUsImNvbXBhbnlfaWQiOm51bGwsInJvbGVzIjpbXSwiaWF0IjoxNzY2MTc0NDQ4LCJleHAiOjE3NjYxNzUzNDh9.hsGdrr6mr8HG_pz1eZ3CVomZDfMdIyZFM6f68JpWiVY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidHlwZV9hY2Nlc3MiOiJDb2xhYm9yYWRvciIsInBlcm1pc3Npb25zIjpbImNyZWF0ZV91c2VyIiwicmVhZF91c2VyIiwicmVhZF9wZXJtaXNzaW9uIl0sInJvbGVzIjpbIkdlcmVudGUiXSwiaWF0IjoxNzc0NjEyNDI1LCJleHAiOjE3NzQ2MTMzMjV9.e6E5rHXY_ZbCtx_1qj9Lil7m7Y6sSUFYaoeV9UQmDoE
 
-content-type: application/json
 Authorization: Bearer {{token}}
 ###
 GET http://{{host}}:{{port}}/activation/
@@ -17,12 +16,13 @@ Authorization: Bearer {{token}}
 ###
 POST http://{{host}}:{{port}}/users
 content-type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "name": "David Luis da Siva",
+  "name": "David 101",
   "phone_number": "32 987075868",
   "date_of_birth": "1983-06-19",
-  "email": "tecnicoroot5@gmail.com",
+  "email": "tecnicoroot8@gmail.com",
   "password": "12345678",
   "passwordConfirmation" : "12345678"
 

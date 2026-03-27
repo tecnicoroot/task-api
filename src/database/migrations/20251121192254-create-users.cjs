@@ -47,6 +47,7 @@ module.exports = {
       tipo_acesso: {
         type: Sequelize.ENUM("superadmin", "admin", "colaborador"),
         allowNull: true,
+        defaultValue: "colaborador"
       },
 
       data_nascimento: {

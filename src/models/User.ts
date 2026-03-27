@@ -14,7 +14,7 @@ interface UserAttributes {
   activation_hash?: string;
 
   password?: string;
-
+  type_access?: "superadmin" | "admin" | "colaborador";
   phone_number?: string;
   date_of_birth?: Date;
   status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
@@ -49,7 +49,7 @@ class User
   public activation_hash?: string;
 
   public password?: string;
-
+  public type_access?: "superadmin" | "admin" | "colaborador";
   public phone_number?: string;
   public date_of_birth?: Date;
   public status?: "ACTIVATED" | "BANNED" | "DEACTIVATED" | "DELETED";
@@ -138,6 +138,13 @@ User.init(
       field: "password",
     },
 
+    type_access: {
+      type: DataTypes.ENUM(
+        "superadmin", "admin", "colaborador"
+      ),
+      field: "tipo_acesso"
+    },
+
     activation_hash: {
       type: DataTypes.STRING,
       field: "hash_ativacao",
@@ -160,6 +167,7 @@ User.init(
         "DEACTIVATED",
         "DELETED"
       ),
+
     },
 
     first_access: {
@@ -183,7 +191,7 @@ User.init(
     tableName: "usuarios",
     modelName: "User",
     underscored: true,
-    timestamps: false,
+    timestamps: true,
     createdAt: 'criado_em',
     updatedAt: 'atualizado_em',
   }

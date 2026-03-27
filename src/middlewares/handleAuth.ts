@@ -4,16 +4,19 @@ import { promisify } from "util";
 
 import authConfig from "../config/auth";
 
+type AccessType = "superadmin";
+
 interface DecodedToken extends JwtPayload {
   id: string;
-  permissions: string[]; // adiciona a propriedade obrigatória
-
+  permissions: string[];
+  type_access: AccessType;
 }
 
 interface AuthRequest extends Request {
   user?: {
     id: string;
-    permissions: string[]; 
+    permissions: string[];
+    type_access: AccessType;
   };
 }
 
@@ -38,7 +41,9 @@ export default async (
 
     req.user = {
       id: decoded.id,
-      permissions: [],
+      permissions: decoded.permissions || [],
+      type_access: decoded.type_access,
+      
     };
 
     return next();
